@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factory Vision AI - Operations Activity Intelligence</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js for High-Performance Real-Time Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <h1 class="brand-title">Factory Vision AI</h1>
+        <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 500;">Operations Activity Recognition & Intelligence</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <!-- YOLO26 Model Scale Switcher -->
+      <div class="model-selector-box">
+        <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase;">MODEL:</span>
+        <select id="model-select" class="model-dropdown" onchange="switchModel(this.value)">
+          <optgroup label="★ Fine-Tuned Specialized">
+            <option value="factory_person_yolo26n_best.pt" class="opt-specialized" selected>★ Factory Specialized (Fine-Tuned)</option>
+          </optgroup>
+          <optgroup label="Standard YOLO26 Scales">
+            <option value="yolo26n.pt">YOLO26 Nano (yolo26n.pt)</option>
+            <option value="yolo26s.pt">YOLO26 Small (yolo26s.pt)</option>
+            <option value="yolo26m.pt">YOLO26 Medium (yolo26m.pt)</option>
+            <option value="yolo26l.pt">YOLO26 Large (yolo26l.pt)</option>
+            <option value="yolo26x.pt">YOLO26 X-Large (yolo26x.pt)</option>
+          </optgroup>
+        </select>
+        <span id="model-status-badge" class="model-badge badge-specialized">★ SPECIALIZED</span>
+        <span id="model-perf-badge" class="model-badge" style="color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4); font-size: 0.70rem;">⚡ 18.5ms • 54 FPS</span>
+      </div>
+
+      <!-- Confidence Threshold Controller -->
+      <div class="model-selector-box" style="gap: 0.65rem;">
+        <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase;">CONFIDENCE:</span>
+        <input type="range" id="conf-slider" min="10" max="90" step="5" value="35" oninput="handleConfidenceChange(this.value)" style="width: 85px; accent-color: var(--accent-emerald); cursor: pointer; vertical-align: middle;">
+        <span id="conf-val-badge" class="model-badge" style="color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.4); min-width: 42px; text-align: center;">35%</span>
+      </div>
+
+      <div class="live-pill">
+        <span class="pulse-dot"></span>
+        <span>4 MONITORS LIVE</span>
+      </div>
+      <div id="live-clock" style="font-family: var(--font-mono); font-size: 0.90rem; color: var(--text-secondary); font-weight: 600;">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard -->
+  <main class="main-content">
+    <!-- Executive KPI Row -->
+    <section class="executive-grid">
+      <div class="black-card">
+        <div class="kpi-label">Facility Activity Index</div>
+        <div class="kpi-value" id="exec-facility-score" style="color: var(--accent-emerald);">0%</div>
+        <div class="kpi-sub" id="exec-facility-level">Status: Calculating...</div>
+      </div>
+
+      <div class="black-card">
+        <div class="kpi-label">Peak Activity Window</div>
+        <div class="kpi-value" id="exec-peak-window" style="font-size: 1.55rem; color: var(--accent-cyan); margin-top: 0.25rem;">
+          09:00 - 11:30
+        </div>
+        <div class="kpi-sub">Highest concurrent worker operations</div>
+      </div>
+
+      <div class="black-card">
+        <div class="kpi-label">Active Workers On-Site</div>
+        <div class="kpi-value" id="exec-active-workers" style="color: var(--accent-amber);">0</div>
+        <div class="kpi-sub" id="exec-workers-sub">Moving: 0 | Stationary: 0</div>
+      </div>
+
+      <div class="black-card">
+        <div class="kpi-label">Monitored Bays</div>
+        <div class="kpi-value" style="color: var(--accent-purple);">4 Active</div>
+        <div class="kpi-sub">Gate, Loading, Storage, Dispatch</div>
+      </div>
+    </section>
+
+    <!-- Multi-Camera Activity Comparison Chart -->
+    <section class="black-card chart-section">
+      <div class="chart-header">
+        <div class="chart-title">
+          <span style="color: var(--accent-cyan);">⚡</span> Real-Time Multi-Camera Activity Timeline (%)
+        </div>
+        <div class="chart-legend-pills">
+          <div class="legend-pill active" id="filter-all" onclick="setChartFilter('all')">All Cameras</div>
+          <div class="legend-pill" id="filter-camera_01" onclick="setChartFilter('camera_01')"><span style="color: #10b981;">●</span> Entrance</div>
+          <div class="legend-pill" id="filter-camera_02" onclick="setChartFilter('camera_02')"><span style="color: #38bdf8;">●</span> Loading Yard</div>
+          <div class="legend-pill" id="filter-camera_03" onclick="setChartFilter('camera_03')"><span style="color: #f59e0b;">●</span> Storage Bay</div>
+          <div class="legend-pill" id="filter-camera_04" onclick="setChartFilter('camera_04')"><span style="color: #a855f7;">●</span> Dispatch Bay</div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="multiCameraActivityChart"></canvas>
+      </div>
+    </section>
+
+    <!-- 4 Camera Activity Cards Grid -->
+    <div style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em;">Live Camera Activity Monitors</h2>
+      <div style="font-size: 0.82rem; color: var(--text-dim);">Live activity intelligence • Click to view live stream</div>
+    </div>
+
+    <!-- Static Container with 4 Dedicated Cards to Prevent DOM Re-creation & Screen Flickering -->
+    <section class="camera-grid">
+      <!-- Camera 01 -->
+      <div class="camera-card" id="card-camera_01">
+        <div class="card-top">
+          <div>
+            <div class="camera-name">Yard Main Entrance</div>
+            <div class="camera-loc">Camera 01 • Main Gate</div>
+          </div>
+          <span class="activity-badge badge-idle" id="badge-camera_01">IDLE</span>
+        </div>
+
+        <div>
+          <div class="score-row">
+            <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Activity Intensity</span>
+            <span class="score-number" id="score-camera_01" style="color: var(--text-dim);">0%</span>
+          </div>
+          <div class="progress-bar-bg" style="margin-top: 0.4rem;">
+            <div class="progress-bar-fill" id="meter-camera_01" style="width: 0%; background: var(--text-dim);"></div>
+          </div>
+        </div>
+
+        <div class="worker-stats-row">
+          <div class="stat-item">
+            <span class="stat-label">Moving Workers</span>
+            <span class="stat-val" id="moving-camera_01" style="color: var(--accent-emerald);">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Stationary</span>
+            <span class="stat-val" id="low-camera_01" style="color: var(--accent-amber);">0</span>
+          </div>
+        </div>
+
+        <div class="sparkline-box">
+          <canvas id="sparkline-camera_01"></canvas>
+        </div>
+
+        <button class="btn-view-feed" onclick="openStreamModal('camera_01', 'Yard Main Entrance')">
+          ▶ View Live Stream
+        </button>
+      </div>
+
+      <!-- Camera 02 -->
+      <div class="camera-card" id="card-camera_02">
+        <div class="card-top">
+          <div>
+            <div class="camera-name">Loading Yard & Vehicle Bay</div>
+            <div class="camera-loc">Camera 02 • Loading Area</div>
+          </div>
+          <span class="activity-badge badge-idle" id="badge-camera_02">IDLE</span>
+        </div>
+
+        <div>
+          <div class="score-row">
+            <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Activity Intensity</span>
+            <span class="score-number" id="score-camera_02" style="color: var(--text-dim);">0%</span>
+          </div>
+          <div class="progress-bar-bg" style="margin-top: 0.4rem;">
+            <div class="progress-bar-fill" id="meter-camera_02" style="width: 0%; background: var(--text-dim);"></div>
+          </div>
+        </div>
+
+        <div class="worker-stats-row">
+          <div class="stat-item">
+            <span class="stat-label">Moving Workers</span>
+            <span class="stat-val" id="moving-camera_02" style="color: var(--accent-emerald);">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Stationary</span>
+            <span class="stat-val" id="low-camera_02" style="color: var(--accent-amber);">0</span>
+          </div>
+        </div>
+
+        <div class="sparkline-box">
+          <canvas id="sparkline-camera_02"></canvas>
+        </div>
+
+        <button class="btn-view-feed" onclick="openStreamModal('camera_02', 'Loading Yard & Vehicle Bay')">
+          ▶ View Live Stream
+        </button>
+      </div>
+
+      <!-- Camera 03 -->
+      <div class="camera-card" id="card-camera_03">
+        <div class="card-top">
+          <div>
+            <div class="camera-name">Storage Bay & Passage</div>
+            <div class="camera-loc">Camera 03 • Internal Warehouse</div>
+          </div>
+          <span class="activity-badge badge-idle" id="badge-camera_03">IDLE</span>
+        </div>
+
+        <div>
+          <div class="score-row">
+            <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Activity Intensity</span>
+            <span class="score-number" id="score-camera_03" style="color: var(--text-dim);">0%</span>
+          </div>
+          <div class="progress-bar-bg" style="margin-top: 0.4rem;">
+            <div class="progress-bar-fill" id="meter-camera_03" style="width: 0%; background: var(--text-dim);"></div>
+          </div>
+        </div>
+
+        <div class="worker-stats-row">
+          <div class="stat-item">
+            <span class="stat-label">Moving Workers</span>
+            <span class="stat-val" id="moving-camera_03" style="color: var(--accent-emerald);">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Stationary</span>
+            <span class="stat-val" id="low-camera_03" style="color: var(--accent-amber);">0</span>
+          </div>
+        </div>
+
+        <div class="sparkline-box">
+          <canvas id="sparkline-camera_03"></canvas>
+        </div>
+
+        <button class="btn-view-feed" onclick="openStreamModal('camera_03', 'Storage Bay & Passage')">
+          ▶ View Live Stream
+        </button>
+      </div>
+
+      <!-- Camera 04 -->
+      <div class="camera-card" id="card-camera_04">
+        <div class="card-top">
+          <div>
+            <div class="camera-name">Dispatch & Outbound Bay</div>
+            <div class="camera-loc">Camera 04 • Dispatch Operations</div>
+          </div>
+          <span class="activity-badge badge-idle" id="badge-camera_04">IDLE</span>
+        </div>
+
+        <div>
+          <div class="score-row">
+            <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Activity Intensity</span>
+            <span class="score-number" id="score-camera_04" style="color: var(--text-dim);">0%</span>
+          </div>
+          <div class="progress-bar-bg" style="margin-top: 0.4rem;">
+            <div class="progress-bar-fill" id="meter-camera_04" style="width: 0%; background: var(--text-dim);"></div>
+          </div>
+        </div>
+
+        <div class="worker-stats-row">
+          <div class="stat-item">
+            <span class="stat-label">Moving Workers</span>
+            <span class="stat-val" id="moving-camera_04" style="color: var(--accent-emerald);">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Stationary</span>
+            <span class="stat-val" id="low-camera_04" style="color: var(--accent-amber);">0</span>
+          </div>
+        </div>
+
+        <div class="sparkline-box">
+          <canvas id="sparkline-camera_04"></canvas>
+        </div>
+
+        <button class="btn-view-feed" onclick="openStreamModal('camera_04', 'Dispatch & Outbound Bay')">
+          ▶ View Live Stream
+        </button>
+      </div>
+    </section>
+
+    <!-- Activity Time Windows Table -->
+    <section class="timeline-section">
+      <div class="timeline-header">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;">
+            ⏱️ Activity Time Windows (From When To When Were Workers Active)
+          </h3>
+          <div style="font-size: 0.80rem; color: var(--text-dim); margin-top: 0.2rem;">
+            Contiguous operational time intervals segmented by worker presence, movement intensity, and physical handling
+          </div>
+        </div>
+      </div>
+      <div style="max-height: 400px; overflow-y: auto;">
+        <table class="timeline-table">
+          <thead>
+            <tr>
+              <th>Camera</th>
+              <th>Time Interval (From - To)</th>
+              <th>Duration</th>
+              <th>Activity Level</th>
+              <th>Intensity</th>
+              <th>Peak Workers</th>
+              <th>Activity Description & Context</th>
+            </tr>
+          </thead>
+          <tbody id="time-windows-tbody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 2.5rem;">
+                Monitoring and segmenting activity intervals...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- On-Demand Live Video Stream Modal -->
+  <div id="live-stream-modal" class="modal-overlay" onclick="closeStreamModal()">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;" id="modal-camera-title">Live Stream</h3>
+          <div style="font-size: 0.80rem; color: var(--text-dim);" id="modal-camera-sub">Real-Time Camera Feed</div>
+        </div>
+        
+        <!-- Toggle: Clean Feed vs AI Diagnostics -->
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+          <div class="toggle-group">
+            <button class="toggle-opt active" id="btn-mode-clean" onclick="setStreamMode('clean')">Clean Stream</button>
+            <button class="toggle-opt" id="btn-mode-ai" onclick="setStreamMode('ai')">AI Diagnostics</button>
+          </div>
+          <button style="background: none; border: none; color: var(--text-dim); font-size: 1.6rem; cursor: pointer; line-height: 1;" onclick="closeStreamModal()">&times;</button>
+        </div>
+      </div>
+
+      <div class="modal-body" style="padding: 1.5rem;">
+        <div class="modal-video-container">
+          <img id="modal-video-element" class="modal-video-stream" src="" alt="Live Video Feed">
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.80rem; color: var(--text-dim); margin-top: 1rem;">
+          <span id="modal-perf-info">⚡ Inference: 18.5ms • Model Capacity: 54.0 FPS</span>
+          <span>Tip: 'AI Diagnostics' shows clean bounding boxes without distracting polygon boxes.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

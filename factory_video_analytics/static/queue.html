@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processing Queue & Workers - Factory Vision AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">Q</div>
+      <div>
+        <h1 class="brand-title">Queue & Ingestion Monitor</h1>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">Real-Time Job Queue & Worker Status</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <a href="/" class="btn-nav">← Shift Overview</a>
+      <a href="/evidence-review" class="btn-nav">Evidence Review</a>
+      <a href="/calibration" class="btn-nav">Zone Editor</a>
+      <a href="/reports-view" class="btn-nav">Export Reports</a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Top Queue KPI Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Waiting in Queue</div>
+        <div class="kpi-value" id="q-waiting" style="color: var(--accent-amber);">0</div>
+        <div class="kpi-sub" id="q-oldest-wait">Oldest: None</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Currently Processing</div>
+        <div class="kpi-value" id="q-processing" style="color: var(--accent-cyan);">0</div>
+        <div class="kpi-sub">GPU Concurrency: 1 Worker</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Completed Clips</div>
+        <div class="kpi-value" id="q-completed" style="color: var(--accent-green);">0</div>
+        <div class="kpi-sub" id="q-failed">Failed: 0 clips</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Average Processing Speed</div>
+        <div class="kpi-value" id="q-speed" style="color: var(--accent-green);">0.0x</div>
+        <div class="kpi-sub" id="q-avg-time">Avg time: 0.0s / clip</div>
+      </div>
+    </section>
+
+    <!-- Jobs Table Card -->
+    <section class="events-card">
+      <div class="card-header">
+        <div class="card-title">Processing Jobs History</div>
+        <button class="btn-nav" onclick="loadQueueData()">Refresh Queue</button>
+      </div>
+      <div class="events-table-wrapper" style="max-height: 480px;">
+        <table class="events-table">
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>Filename</th>
+              <th>Camera</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Duration</th>
+              <th>Processing Time</th>
+              <th>Speed Ratio</th>
+              <th>Attempts</th>
+            </tr>
+          </thead>
+          <tbody id="jobs-tbody">
+            <tr>
+              <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading queue data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/js/queue.js"></script>
+</body>
+</html>

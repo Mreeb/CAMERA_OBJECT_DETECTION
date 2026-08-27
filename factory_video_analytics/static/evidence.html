@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evidence Review & Verification - Factory Vision AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .evidence-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .evidence-media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      object-fit: contain;
+    }
+    .evidence-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .btn-verify {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-confirm { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border-color: rgba(16, 185, 129, 0.4); }
+    .btn-reject { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border-color: rgba(239, 68, 68, 0.4); }
+    .btn-confirm:hover { background: var(--accent-green); color: #000; }
+    .btn-reject:hover { background: var(--accent-red); color: #fff; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">E</div>
+      <div>
+        <h1 class="brand-title">Evidence Review & Human Audit</h1>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">Snapshots & 15-Second Evidence Clips</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <a href="/" class="btn-nav">← Shift Overview</a>
+      <a href="/queue" class="btn-nav">Queue Monitor</a>
+      <a href="/calibration" class="btn-nav">Zone Editor</a>
+      <a href="/reports-view" class="btn-nav">Export Reports</a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2 style="font-size: 1.25rem; font-weight: 700;">Event Evidence Log</h2>
+        <div style="font-size: 0.8rem; color: var(--text-secondary);">
+          Review confirmed transfers, line crossings, and extended low-motion flags
+        </div>
+      </div>
+      <button class="btn-nav" onclick="loadEvidence()">Refresh Evidence</button>
+    </div>
+
+    <div id="evidence-container" class="evidence-grid">
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+        Loading evidence records...
+      </div>
+    </div>
+  </main>
+
+  <script src="/static/js/evidence.js"></script>
+</body>
+</html>

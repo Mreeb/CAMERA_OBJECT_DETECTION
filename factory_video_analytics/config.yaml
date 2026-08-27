@@ -1,0 +1,133 @@
+# Factory Activity Recognition & Multi-Camera Configuration
+
+cameras:
+  camera_01:
+    id: "camera_01"
+    name: "Yard Main Entrance"
+    location_id: "yard_gate"
+    role: "primary"
+    source_type: "file"
+    source: "Videos/VID-20260820-WA0002.mp4"
+    rotation: "ccw"
+    loop: true
+    enabled: true
+
+  camera_02:
+    id: "camera_02"
+    name: "Loading Yard & Vehicle Bay"
+    location_id: "loading_yard"
+    role: "primary"
+    source_type: "file"
+    source: "Videos/VID-20260820-WA0003.mp4"
+    rotation: 0
+    loop: true
+    enabled: true
+
+  camera_03:
+    id: "camera_03"
+    name: "Storage Bay & Passage"
+    location_id: "storage_bay"
+    role: "primary"
+    source_type: "file"
+    source: "Videos/VID-20260820-WA0004.mp4"
+    rotation: "ccw"
+    loop: true
+    enabled: true
+
+  camera_04:
+    id: "camera_04"
+    name: "Dispatch & Outbound Bay"
+    location_id: "dispatch"
+    role: "primary"
+    source_type: "file"
+    source: "Videos/VID-20260820-WA0006.mp4"
+    rotation: 0
+    loop: true
+    enabled: true
+
+locations:
+  yard_gate:
+    name: "Main Facility Gate & Entrance"
+    primary_camera: "camera_01"
+  loading_yard:
+    name: "Loading Yard & Vehicle Bay"
+    primary_camera: "camera_02"
+  storage_bay:
+    name: "Storage Warehouse Bay"
+    primary_camera: "camera_03"
+  dispatch:
+    name: "Dispatch & Packaging Bay"
+    primary_camera: "camera_04"
+
+pipeline:
+  inference_fps_per_cam: 5.0
+  device: "auto"
+
+detection:
+  model_type: "yolo26"
+  checkpoint: "yolo26.pt"
+  fallback_checkpoint: "yolo11s.pt"
+  target_classes:
+    - "person"
+  person_confidence: 0.35
+  iou_threshold: 0.45
+
+movement:
+  smoothing_alpha: 0.4
+  warmup_seconds: 1.5
+  window_seconds: 2.0
+  enter_moving_threshold_px_per_sec: 20.0
+  exit_moving_threshold_px_per_sec: 10.0
+  low_motion_after_seconds: 30.0
+  extended_low_motion_after_seconds: 120.0
+
+zones:
+  - id: "zone_work_loading"
+    name: "Vehicle Loading Area"
+    type: "work"
+    polygon:
+      - [0.63, 0.14]
+      - [0.85, 0.14]
+      - [0.85, 0.40]
+      - [0.60, 0.40]
+      - [0.70, 0.35]
+    color: [0, 215, 255]
+
+  - id: "zone_storage_boxes"
+    name: "Storage Area"
+    type: "storage"
+    polygon:
+      - [0.05, 0.19]
+      - [0.45, 0.19]
+      - [0.42, 0.55]
+      - [0.05, 0.65]
+    color: [255, 140, 0]
+
+  - id: "zone_main_passage"
+    name: "Main Yard Passage"
+    type: "work"
+    polygon:
+      - [0.35, 0.35]
+      - [0.71, 0.35]
+      - [0.85, 0.90]
+      - [0.15, 0.90]
+    color: [50, 205, 50]
+
+  - id: "zone_exclusion_background"
+    name: "Background Structure"
+    type: "exclusion"
+    polygon:
+      - [0.12, 0.20]
+      - [0.27, 0.20]
+      - [0.27, 0.37]
+      - [0.12, 0.37]
+    color: [100, 100, 100]
+
+counting_line:
+  enabled: true
+  name: "Yard Passage Line"
+  point1: [0.25, 0.60]
+  point2: [0.85, 0.60]
+  target_classes:
+    - "cardboard box"
+  count_people: false

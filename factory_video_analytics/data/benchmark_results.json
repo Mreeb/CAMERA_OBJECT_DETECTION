@@ -1,0 +1,35 @@
+[
+  {
+    "target_inference_fps": 5.0,
+    "video_duration_sec": 132.64,
+    "processing_time_sec": 17.48,
+    "speed_to_video_ratio": 7.59,
+    "clips_5min_per_hour": 91.1,
+    "vram_allocated_mb": 660.9,
+    "supports_4_cameras": true,
+    "supports_5_cameras": true,
+    "capacity_margin_4_cams_pct": 89.7
+  },
+  {
+    "target_inference_fps": 8.0,
+    "video_duration_sec": 132.64,
+    "processing_time_sec": 20.81,
+    "speed_to_video_ratio": 6.38,
+    "clips_5min_per_hour": 76.5,
+    "vram_allocated_mb": 660.9,
+    "supports_4_cameras": true,
+    "supports_5_cameras": true,
+    "capacity_margin_4_cams_pct": 59.4
+  },
+  {
+    "target_inference_fps": 10.0,
+    "video_duration_sec": 132.64,
+    "processing_time_sec": 28.38,
+    "speed_to_video_ratio": 4.67,
+    "clips_5min_per_hour": 56.1,
+    "vram_allocated_mb": 660.9,
+    "supports_4_cameras": true,
+    "supports_5_cameras": false,
+    "capacity_margin_4_cams_pct": 16.9
+  }
+]

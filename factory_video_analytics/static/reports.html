@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Reports & Exports - Factory Vision AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">R</div>
+      <div>
+        <h1 class="brand-title">Shift Reports & Data Exports</h1>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">Verifiable Deterministic Reports</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <a href="/" class="btn-nav">← Shift Overview</a>
+      <a href="/queue" class="btn-nav">Queue Monitor</a>
+      <a href="/evidence-review" class="btn-nav">Evidence Review</a>
+      <a href="/calibration" class="btn-nav">Zone Editor</a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <h2 style="font-size: 1.25rem; font-weight: 700;">Deterministic Shift Report</h2>
+        <div style="font-size: 0.8rem; color: var(--text-secondary);">
+          Generated strictly from structured database event logs and track observations
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn-nav" onclick="generateAndExport()">Generate & Export Files</button>
+      </div>
+    </div>
+
+    <!-- Narrative Card -->
+    <div class="video-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.75rem;">
+        Executive Narrative Summary
+      </h3>
+      <div id="report-narrative" style="font-size: 0.92rem; line-height: 1.7; color: #f1f5f9; background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-line;">
+        Loading report narrative...
+      </div>
+    </div>
+
+    <!-- Structured Metrics Table -->
+    <div class="events-card">
+      <div class="card-header">
+        <div class="card-title">Structured Shift Metrics</div>
+      </div>
+      <div class="events-table-wrapper">
+        <table class="events-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
+              <th>Unit / Description</th>
+            </tr>
+          </thead>
+          <tbody id="metrics-tbody">
+            <tr><td colspan="3" style="text-align:center; padding: 2rem; color: var(--text-muted);">Loading metrics...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="/static/js/reports.js"></script>
+</body>
+</html>
